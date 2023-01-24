@@ -28,7 +28,7 @@ public class MinioService {
         PutObjectArgs args = PutObjectArgs.builder()
                 .bucket(bucketName)
                 .object(file.getOriginalFilename())
-                .contentType("image/jpeg")
+                .contentType(file.getContentType())
                 .stream(file.getInputStream(),file.getSize(),64*1024*1024)
                 .build();
         minioClient.putObject(args);
