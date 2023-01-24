@@ -1,5 +1,13 @@
 version: '3.3'
 services:
+  gateway:
+    image: jc21/nginx-proxy-manager:latest
+    ports:
+      - '8001:81'
+      - '8000:80'
+    volumes:
+      - nginx-data:/data
+      - le:/etc/letsencrypt
   app_db:
     image: mysql:8.0
     restart: always
@@ -26,3 +34,5 @@ services:
 volumes:
   mysql-webshop-product:
   minio-storage:
+  nginx-data:
+  le:
