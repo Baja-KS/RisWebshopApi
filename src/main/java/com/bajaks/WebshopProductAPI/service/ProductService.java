@@ -78,7 +78,6 @@ public class ProductService {
     }
 
     public Product update(Product product, ProductUpdateDTO dto, MultipartFile img){
-        log.atInfo().log("Fields: ",ProductUpdateDTO.class.getFields());
         for (Field f : dto.getClass().getDeclaredFields()){
             String field = f.getName();
             if (field.equalsIgnoreCase("categoryId")){
