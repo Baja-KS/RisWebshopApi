@@ -1,4 +1,4 @@
-package com.bajaks.WebshopProductAPI.services;
+package com.bajaks.WebshopProductAPI.service;
 
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
