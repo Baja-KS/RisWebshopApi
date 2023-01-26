@@ -37,12 +37,12 @@ public class CategoryController {
         return categoryService.all();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/details/{id}")
     public CategoryDTO get(@PathVariable(name = "id") Long id){
         return categoryService.getDTOById(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public MessageResponse delete(@PathVariable(name = "id") Category category){
         categoryService.delete(category);
         return new MessageResponse("Delete successful!");

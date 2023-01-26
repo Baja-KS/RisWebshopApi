@@ -2,6 +2,7 @@ package com.bajaks.WebshopProductAPI.service;
 
 import com.bajaks.WebshopProductAPI.dto.OrderAttribute;
 import com.bajaks.WebshopProductAPI.dto.ProductCreateDTO;
+import com.bajaks.WebshopProductAPI.dto.ProductUpdateDTO;
 import com.bajaks.WebshopProductAPI.dto.SearchData;
 import com.bajaks.WebshopProductAPI.dto.mapper.DTOMapper;
 import com.bajaks.WebshopProductAPI.exception.CategoryNotFoundException;
@@ -17,9 +18,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -70,6 +75,58 @@ public class ProductService {
         }
         p.setCategory(category);
         return pr.save(p);
+    }
+
+    public Product update(Product product, ProductUpdateDTO dto, MultipartFile img){
+        log.atInfo().log("Fields: ",ProductUpdateDTO.class.getFields());
+        for (Field f : dto.getClass().getDeclaredFields()){
+            String field = f.getName();
+            if (field.equalsIgnoreCase("categoryId")){
+                continue;
+            }
+            Method getter = null;
+            Method setter = null;
+            Method productGetter = null;
+            Object oldItem = null;
+            Object newItem = null;
+            try {
+                setter = product.getClass().getMethod("set"+ StringUtils.capitalize(field),f.getType());
+                getter = dto.getClass().getMethod("get"+ StringUtils.capitalize(field));
+                productGetter = product.getClass().getMethod("get"+ StringUtils.capitalize(field));
+                newItem = getter.invoke(dto);
+                oldItem = productGetter.invoke(product);
+                log.atInfo().log("Old item {},new item {}",oldItem,newItem);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            if (newItem != null && !newItem.equals(oldItem)){
+                log.atInfo().log("Property chaning --> Property: {} Old: {} New: {}",field,oldItem,newItem);
+                try {
+                    setter.invoke(product,newItem);
+                } catch (IllegalAccessException | InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        if (img != null && !img.isEmpty() && (!img.getName().equals(product.getImg()))){
+            try {
+                minioService.upload(img);
+            } catch (IOException | InsufficientDataException | ServerException | ErrorResponseException |
+                     NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
+                     InternalException e) {
+                throw new RuntimeException(e);
+            }
+            product.setImg(img.getOriginalFilename());
+        }
+        if (dto.getCategoryId() != null && !dto.getCategoryId().equals(product.getCategory().getId())){
+            Category category = categoryService.getById(dto.getCategoryId());
+            product.setCategory(category);
+        }
+        return pr.save(product);
+    }
+
+    public void delete(Product product){
+        pr.delete(product);
     }
 
 }

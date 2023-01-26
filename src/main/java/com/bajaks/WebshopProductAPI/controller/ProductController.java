@@ -1,8 +1,6 @@
 package com.bajaks.WebshopProductAPI.controller;
 
-import com.bajaks.WebshopProductAPI.dto.OrderAttribute;
-import com.bajaks.WebshopProductAPI.dto.ProductCreateDTO;
-import com.bajaks.WebshopProductAPI.dto.SearchData;
+import com.bajaks.WebshopProductAPI.dto.*;
 import com.bajaks.WebshopProductAPI.model.Category;
 import com.bajaks.WebshopProductAPI.model.Product;
 import com.bajaks.WebshopProductAPI.service.ProductService;
@@ -42,7 +40,21 @@ public class ProductController {
                         .stock(stock)
                 .build(), img);
     }
-//
+
+    @PutMapping(value = "/update/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Product update(@PathVariable(name = "id")Product product,@RequestParam(required = false) String name,@RequestParam(required = false) String specification,@RequestParam(required = false) Float price,
+                          @RequestParam(required = false) Float discount,@RequestParam(required = false) Long categoryId,@RequestParam(required = false) Integer stock
+            , @RequestPart(value = "img",required = false)MultipartFile img){
+
+        return productService.update(product, ProductUpdateDTO.builder()
+                .categoryId(categoryId)
+                .name(name)
+                .discount(discount)
+                .price(price)
+                .specification(specification)
+                .stock(stock)
+                .build(), img);
+    }
     @GetMapping("/search")
     public Page<Product> search(@RequestParam(defaultValue = "") String search,
                                 @RequestParam(required = false) Float minPrice,
@@ -60,5 +72,11 @@ public class ProductController {
                         .pageSize(perPage)
                         .orderAttributes(List.of(new OrderAttribute("name", Sort.Direction.ASC)))
                     .build());
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public MessageResponse delete(@PathVariable(name = "id") Product product){
+        productService.delete(product);
+        return new MessageResponse("Delete successful!");
     }
 }
