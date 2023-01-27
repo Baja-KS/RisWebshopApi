@@ -19,6 +19,7 @@ public class DTOMapper {
         return CategoryDTO.builder()
                 .id(category.getId())
                 .name(category.getName())
+                .productCount(category.getProducts().size())
                 .build();
     }
     public Product productCreateDTOToProduct(ProductCreateDTO productCreateDTO){
