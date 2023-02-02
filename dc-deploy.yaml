@@ -1,6 +1,22 @@
 version: '3.3'
 services:
-  app_db:
+  gateway:
+    image: jc21/nginx-proxy-manager:latest
+    ports:
+      - '8001:81'
+      - '8000:80'
+    volumes:
+      - nginx-data:/data
+      - le:/etc/letsencrypt
+  product_api:
+    image: bajaks/webshop-product-api:v0.0.2
+    restart: always
+    env_file:
+      - .env.deploy
+    depends_on:
+      - product_db
+      - minio
+  product_db:
     image: mysql:8.0
     restart: always
     ports:
@@ -26,3 +42,5 @@ services:
 volumes:
   mysql-webshop-product:
   minio-storage:
+  nginx-data:
+  le:
