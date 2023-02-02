@@ -3,11 +3,17 @@ package com.bajaks.RisWebshopApi.controller;
 import com.bajaks.RisWebshopApi.dto.*;
 import com.bajaks.RisWebshopApi.model.Category;
 import com.bajaks.RisWebshopApi.model.Product;
+import com.bajaks.RisWebshopApi.model.Review;
+import com.bajaks.RisWebshopApi.model.User;
 import com.bajaks.RisWebshopApi.service.ProductService;
+import com.bajaks.RisWebshopApi.service.ReviewService;
+import com.bajaks.RisWebshopApi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +25,9 @@ import java.util.List;
 @CrossOrigin("*")
 public class ProductController {
     private final ProductService productService;
+    private final ReviewService reviewService;
+
+    private final UserService userService;
 
     @GetMapping("/details/{id}")
     public Product getById(@PathVariable(name = "id") Long id){
@@ -77,5 +86,18 @@ public class ProductController {
     public MessageResponse delete(@PathVariable(name = "id") Product product){
         productService.delete(product);
         return new MessageResponse("Delete successful!");
+    }
+
+    @PostMapping("/review/{id}")
+    public MessageResponse review(@PathVariable(name = "id")Product product, Authentication authentication,@RequestBody ReviewRequest request) {
+        User user = userService.getByUsername(authentication.getName());
+        return reviewService.add(product,user,request);
+    }
+    @GetMapping("/review/{id}")
+    public Page<Review> forProduct(@PathVariable(name = "id")Product product,
+                                   @RequestParam(defaultValue = "0") Integer page,
+                                   @RequestParam(defaultValue = "5") Integer perPage){
+        return reviewService.forProduct(product,page,perPage);
+
     }
 }

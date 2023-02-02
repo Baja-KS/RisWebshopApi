@@ -1,11 +1,15 @@
 package com.bajaks.RisWebshopApi.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -24,11 +28,17 @@ public class User {
     private String lastName;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
     @Enumerated
     private Role role;
 
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<Review> reviews;
+
+    @JsonIgnore
     public String getRoleName(){
         if (role == Role.ADMINISTRATOR) {
             return "ADMINISTRATOR";

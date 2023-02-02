@@ -38,8 +38,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String token = maybeToken.get();
         UserDetails userDetails = userDetailsService.loadUserByUsername(jwtUtil.extractUsername(token));
         if (!jwtUtil.validateToken(token,userDetails)) {
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Token invalid");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Token invalid");
             filterChain.doFilter(request,response);
             return;
         }

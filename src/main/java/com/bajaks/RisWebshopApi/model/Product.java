@@ -1,5 +1,6 @@
 package com.bajaks.RisWebshopApi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
@@ -8,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -42,4 +45,8 @@ public class Product {
     @JoinColumn(name = "category_id",referencedColumnName = "id",nullable = false)
     @JsonManagedReference
     private Category category;
+
+    @OneToMany(mappedBy = "product")
+    @JsonBackReference
+    private List<Review> reviews;
 }
