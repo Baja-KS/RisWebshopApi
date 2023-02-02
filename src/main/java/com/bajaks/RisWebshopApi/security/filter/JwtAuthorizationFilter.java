@@ -27,7 +27,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final UserDetailsServiceImplementation userDetailsService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.atInfo().log("Enter the filter");
         Optional<String> maybeToken = jwtUtil.getToken(request);
         if (maybeToken.isEmpty()){
 //            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
