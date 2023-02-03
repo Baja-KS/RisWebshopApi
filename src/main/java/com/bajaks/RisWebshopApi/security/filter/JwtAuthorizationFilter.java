@@ -37,14 +37,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         String username = null;
         try {
             username = jwtUtil.extractUsername(token);
-        } catch (ExpiredJwtException e){
+        } catch (Exception e){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setHeader("X-TOKEN-INVALID","true");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Token has expired");
             return;
         }
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (!jwtUtil.validateToken(token,userDetails)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setHeader("X-TOKEN-INVALID","true");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Token has expired");
             return;
         }

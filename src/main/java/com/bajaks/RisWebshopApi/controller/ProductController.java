@@ -59,6 +59,7 @@ public class ProductController {
     public Product create(@RequestParam String name,@RequestParam(required = false) String specification,@RequestParam Float price,
            @RequestParam(required = false) Float discount,@RequestParam Long categoryId,@RequestParam(required = false) Integer stock
             , @RequestPart(value = "img",required = false)MultipartFile img){
+        log.atInfo().log("Category: {}",categoryId);
 
         return productService.create(ProductCreateDTO.builder()
                         .categoryId(categoryId)
@@ -111,6 +112,7 @@ public class ProductController {
 
     @PostMapping("/review/{id}")
     public MessageResponse review(@PathVariable(name = "id")Product product, Authentication authentication,@RequestBody ReviewRequest request) {
+        log.atInfo().log("rating: {},comment: {}",request.getRating(),request.getComment());
         User user = userService.getByUsername(authentication.getName());
         return reviewService.add(product,user,request);
     }

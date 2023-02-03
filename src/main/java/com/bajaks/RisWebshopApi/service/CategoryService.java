@@ -40,6 +40,7 @@ public class CategoryService {
 //        return cr.findById(Long.valueOf(id));
 //    }
     public Category getById(Long id){
+
         return cr.findById(id).orElseThrow(CategoryNotFoundException::new);
     }
     public CategoryDTO getDTOById(Long id){
