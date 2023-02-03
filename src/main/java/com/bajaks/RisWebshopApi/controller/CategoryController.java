@@ -30,6 +30,7 @@ public class CategoryController {
 
     @PutMapping(value = "/update/{id}",consumes = MediaType.APPLICATION_JSON_VALUE)
     public CategoryDTO update(@Valid @RequestBody CategoryCreateDTO dto,@PathVariable(name = "id")Category category){
+//        category.getProducts().contains()
         return categoryService.update(category,dto);
     }
 

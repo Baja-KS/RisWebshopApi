@@ -10,9 +10,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface ProductRepository extends JpaRepository<Product,Long> {
-//    @Query("select p from Product p where (p.name ilike %?1% or p.specification ilike %?1%)")
-    public Page<Product> findByNameContainingIgnoreCaseOrSpecificationContainingIgnoreCase(String search,String alsoSearch,Pageable pageable);
-//    public Page<Product> findAllBy(SearchData data, Pageable pageable);
     @Transactional(readOnly = true)
     @Query("SELECT p FROM Product p WHERE (p.name ilike %:search% OR p.specification ilike %:search%) " +
             "AND (:minPrice IS NULL OR p.price >= :minPrice) " +

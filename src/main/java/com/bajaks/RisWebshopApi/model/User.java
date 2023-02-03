@@ -38,6 +38,10 @@ public class User {
     @JsonBackReference
     private List<Review> reviews;
 
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<Order> orders;
+
     @JsonIgnore
     public String getRoleName(){
         if (role == Role.ADMINISTRATOR) {

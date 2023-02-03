@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,7 +70,7 @@ public class ProductController {
                                 @RequestParam(required = false) Integer stock,
                                 @RequestParam(defaultValue = "0") Integer page,
                                 @RequestParam(defaultValue = "5") Integer perPage){
-        return productService.filter(SearchData.builder()
+        return productService.filter(ProductSearchData.builder()
                 .search(search)
                         .minPrice(minPrice)
                         .maxPrice(maxPrice)

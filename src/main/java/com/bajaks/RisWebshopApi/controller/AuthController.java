@@ -29,7 +29,8 @@ public class AuthController {
     public LoginResponse login(@RequestBody LoginRequest loginRequest){
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
         UserDetailsImplementation userDetails = (UserDetailsImplementation) userDetailsService.loadUserByUsername(loginRequest.getUsername());
-        return LoginResponse.builder().token(jwtUtil.generateToken(userDetails)).build();
+        User user = userService.getByUsername(userDetails.getUsername());
+        return LoginResponse.builder().token(jwtUtil.generateToken(userDetails)).user(user).build();
     }
     @PostMapping("/register")
     public RegisterResponse register(@RequestBody RegisterRequest registerRequest) {

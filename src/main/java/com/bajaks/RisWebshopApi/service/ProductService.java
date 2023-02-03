@@ -3,7 +3,7 @@ package com.bajaks.RisWebshopApi.service;
 import com.bajaks.RisWebshopApi.dto.OrderAttribute;
 import com.bajaks.RisWebshopApi.dto.ProductCreateDTO;
 import com.bajaks.RisWebshopApi.dto.ProductUpdateDTO;
-import com.bajaks.RisWebshopApi.dto.SearchData;
+import com.bajaks.RisWebshopApi.dto.ProductSearchData;
 import com.bajaks.RisWebshopApi.dto.mapper.DTOMapper;
 import com.bajaks.RisWebshopApi.exception.ProductNotFoundException;
 import com.bajaks.RisWebshopApi.model.Category;
@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -49,7 +48,7 @@ public class ProductService {
         return pr.findAll();
     }
 
-    public Page<Product> filter(SearchData data){
+    public Page<Product> filter(ProductSearchData data){
         Sort sort = Sort.unsorted();
         for(OrderAttribute o : data.getOrderAttributes()){
             sort = sort.and(Sort.by(o.getDirection(),o.getName()));

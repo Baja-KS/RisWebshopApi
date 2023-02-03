@@ -1,16 +1,18 @@
 package com.bajaks.RisWebshopApi.dto;
 
-import com.bajaks.RisWebshopApi.model.User;
+import com.bajaks.RisWebshopApi.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LoginResponse {
-    private String token;
-    private User user;
+@Data
+public class UserSearchData {
+    private String search;
+    private Role role;
+    private Integer page;
+    private Integer perPage;
 }

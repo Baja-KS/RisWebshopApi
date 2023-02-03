@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Data
-public class SearchData {
+public class ProductSearchData {
     private String search;
     private Category category;
     private Float minPrice;
