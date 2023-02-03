@@ -9,11 +9,13 @@ import com.bajaks.RisWebshopApi.model.Order;
 import com.bajaks.RisWebshopApi.model.Product;
 import com.bajaks.RisWebshopApi.model.User;
 import com.bajaks.RisWebshopApi.service.OrderService;
+import com.bajaks.RisWebshopApi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 
@@ -23,10 +25,12 @@ import java.util.List;
 @CrossOrigin("*")
 public class OrderController {
     private final OrderService orderService;
+    private final UserService userService;
 
     @PostMapping("/create")
-    public Order create(@RequestBody OrderCreateRequest request) {
-        return orderService.create(request);
+    public Order create(@RequestBody OrderCreateRequest request, Principal principal) {
+        User user = userService.getByUsername(principal.getName());
+        return orderService.create(request,user);
     }
 
     @PutMapping("/deliver/{id}")
@@ -34,7 +38,7 @@ public class OrderController {
         return orderService.delivered(order);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/search/admin")
     public Page<Order> search(@RequestParam(defaultValue = "") String address,
                               @RequestParam(required = false) Float minTotal,
                               @RequestParam(required = false) Float maxTotal,
@@ -43,6 +47,30 @@ public class OrderController {
                               @RequestParam(required = false)Date to,
                               @RequestParam(defaultValue = "0") Integer page,
                               @RequestParam(defaultValue = "5") Integer perPage){
+        OrderSearchData data = OrderSearchData.builder()
+                .address(address)
+                .minTotal(minTotal)
+                .maxTotal(maxTotal)
+                .user(user)
+                .from(from)
+                .to(to)
+                .page(page)
+                .perPage(perPage)
+                .build();
+        return orderService.search(data);
+    }
+
+    @GetMapping("/search/user")
+    public Page<Order> search(@RequestParam(defaultValue = "") String address,
+                              @RequestParam(required = false) Float minTotal,
+                              @RequestParam(required = false) Float maxTotal,
+                              @RequestParam(required = false)Date from,
+                              @RequestParam(required = false)Date to,
+                              @RequestParam(defaultValue = "0") Integer page,
+                              @RequestParam(defaultValue = "5") Integer perPage,
+                              Principal principal){
+
+        User user = userService.getByUsername(principal.getName());
         OrderSearchData data = OrderSearchData.builder()
                 .address(address)
                 .minTotal(minTotal)

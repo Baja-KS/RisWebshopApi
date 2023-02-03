@@ -15,6 +15,5 @@ import java.util.List;
 @Data
 public class OrderCreateRequest {
     private String address;
-    private User user;
     private List<OrderItemRequest> items;
 }

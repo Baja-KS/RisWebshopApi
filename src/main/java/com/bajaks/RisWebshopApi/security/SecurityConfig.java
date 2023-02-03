@@ -30,12 +30,11 @@ public class SecurityConfig{
 		http.csrf().disable();
 		http
 				.authorizeHttpRequests(requests -> requests
-						.requestMatchers("/products/delete","/products/delete/**").hasRole("ADMINISTRATOR")
-						.requestMatchers("/products/create","/products/update","/products/update/**").hasAnyRole("ADMINISTRATOR","EMPLOYEE")
-						.requestMatchers("/categories/delete","/categories/delete/**").hasRole("ADMINISTRATOR")
-						.requestMatchers("/categories/create","/categories/update","/categories/update/**").hasAnyRole("ADMINISTRATOR","EMPLOYEE")
-						.requestMatchers("/users/**").hasRole("ADMINISTRATOR")
-						.requestMatchers("/products/review/**").authenticated()
+						.requestMatchers("/users/**","/orders/search/admin").hasRole("ADMINISTRATOR")
+						.requestMatchers("/products/create","/products/update","/products/update/**","/products/delete/**").hasAnyRole("ADMINISTRATOR","EMPLOYEE")
+						.requestMatchers("/categories/create","/categories/update","/categories/update/**","/categories/delete/**").hasAnyRole("ADMINISTRATOR","EMPLOYEE")
+						.requestMatchers("/orders/deliver/**").hasAnyRole("ADMINISTRATOR","EMPLOYEE")
+						.requestMatchers("/products/review/**","/orders/create","/orders/search/user").authenticated()
 						.requestMatchers("/auth/login","/auth/register").anonymous()
 						.anyRequest().permitAll()
 

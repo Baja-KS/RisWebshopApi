@@ -29,8 +29,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Optional<String> maybeToken = jwtUtil.getToken(request);
         if (maybeToken.isEmpty()){
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"No token provided");
             filterChain.doFilter(request,response);
             return;
         }
@@ -38,8 +36,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         UserDetails userDetails = userDetailsService.loadUserByUsername(jwtUtil.extractUsername(token));
         if (!jwtUtil.validateToken(token,userDetails)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Token invalid");
-            filterChain.doFilter(request,response);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Token has expired");
+//            filterChain.doFilter(request,response);
             return;
         }
         UsernamePasswordAuthenticationToken authenticate = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
