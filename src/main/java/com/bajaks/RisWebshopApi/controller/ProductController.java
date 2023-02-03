@@ -8,7 +8,10 @@ import com.bajaks.RisWebshopApi.model.User;
 import com.bajaks.RisWebshopApi.service.ProductService;
 import com.bajaks.RisWebshopApi.service.ReviewService;
 import com.bajaks.RisWebshopApi.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -16,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.OutputStream;
 import java.util.List;
 
 @RestController
@@ -98,5 +102,13 @@ public class ProductController {
                                    @RequestParam(defaultValue = "5") Integer perPage){
         return reviewService.forProduct(product,page,perPage);
 
+    }
+    @GetMapping("/report/{id}")
+    public void report(HttpServletResponse r,@PathVariable(name = "id")Product product) throws Exception {
+        JasperPrint jasperPrint = reviewService.reviewReport(product);
+        r.setContentType("application/x-download");
+        r.addHeader("Content-disposition", "attachment; filename=Reviews.pdf");
+        OutputStream out = r.getOutputStream();
+        JasperExportManager.exportReportToPdfStream(jasperPrint,out);
     }
 }

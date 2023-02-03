@@ -62,25 +62,6 @@ public class CategoryService {
     public void delete(Category category){
         cr.delete(category);
     }
-
-    //Testing
-//    public JasperPrint categoryReport(){
-//        List<CategoryDTO> categories = cr.findAll().stream().map(mapper::categoryToCategoryDTO).toList();
-////        List<Category> categories = cr.findAll();
-//        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(categories);
-//        try {
-//            InputStream template = minioService.get("jasper-templates/report-template.jrxml");
-//            JasperReport jasperReport = JasperCompileManager.compileReport(template);
-//            template.close();
-//            Map<String, Object> params = new HashMap<>();
-//            params.put("title","Categories");
-//            return JasperFillManager.fillReport(jasperReport,params,dataSource);
-//        } catch (ServerException | InsufficientDataException | ErrorResponseException | IOException |
-//                 NoSuchAlgorithmException | InvalidKeyException | InvalidResponseException | XmlParserException |
-//                 InternalException | JRException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
+    
 
 }

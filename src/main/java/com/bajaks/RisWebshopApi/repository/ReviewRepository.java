@@ -10,4 +10,5 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review,Long> {
     public Page<Review> findByProduct(Product product, Pageable pageable);
+    public List<Review> findByProduct(Product product);
 }
