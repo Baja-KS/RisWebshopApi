@@ -2,6 +2,7 @@ package com.bajaks.RisWebshopApi.security.filter;
 
 import com.bajaks.RisWebshopApi.security.UserDetailsServiceImplementation;
 import com.bajaks.RisWebshopApi.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,11 +34,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
         String token = maybeToken.get();
-        UserDetails userDetails = userDetailsService.loadUserByUsername(jwtUtil.extractUsername(token));
+        String username = null;
+        try {
+            username = jwtUtil.extractUsername(token);
+        } catch (ExpiredJwtException e){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Token has expired");
+            return;
+        }
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (!jwtUtil.validateToken(token,userDetails)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED,"Token has expired");
-//            filterChain.doFilter(request,response);
             return;
         }
         UsernamePasswordAuthenticationToken authenticate = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
