@@ -67,7 +67,7 @@ public class ReviewService {
                 .build()).toList();
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(items);
         try {
-            InputStream template = minioService.get("jasper-templates/report-template.jrxml");
+            InputStream template = minioService.get("jasper-templates/review-report-template.jrxml");
             JasperReport jasperReport = JasperCompileManager.compileReport(template);
             template.close();
             Map<String, Object> params = new HashMap<>();
