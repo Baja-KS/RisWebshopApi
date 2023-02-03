@@ -1,20 +1,21 @@
 package com.bajaks.RisWebshopApi.controller;
 
-import com.bajaks.RisWebshopApi.dto.OrderAttribute;
-import com.bajaks.RisWebshopApi.dto.OrderCreateRequest;
-import com.bajaks.RisWebshopApi.dto.OrderSearchData;
-import com.bajaks.RisWebshopApi.dto.ProductSearchData;
+import com.bajaks.RisWebshopApi.dto.*;
 import com.bajaks.RisWebshopApi.model.Category;
 import com.bajaks.RisWebshopApi.model.Order;
 import com.bajaks.RisWebshopApi.model.Product;
 import com.bajaks.RisWebshopApi.model.User;
 import com.bajaks.RisWebshopApi.service.OrderService;
 import com.bajaks.RisWebshopApi.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperPrint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.OutputStream;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -82,6 +83,19 @@ public class OrderController {
                 .perPage(perPage)
                 .build();
         return orderService.search(data);
+    }
+
+    @GetMapping("/report")
+    public void report(HttpServletResponse r, @RequestParam(defaultValue = "") String address,
+                       @RequestParam(required = false) Float minTotal,
+                       @RequestParam(required = false) Float maxTotal,
+                       @RequestParam(required = false)Date from,
+                       @RequestParam(required = false)Date to) throws Exception {
+        JasperPrint jasperPrint = orderService.orderReport(new OrderReportData(from,to,address,minTotal,maxTotal));
+        r.setContentType("application/x-download");
+        r.addHeader("Content-disposition", "attachment; filename=Orders.pdf");
+        OutputStream out = r.getOutputStream();
+        JasperExportManager.exportReportToPdfStream(jasperPrint,out);
     }
 
 }

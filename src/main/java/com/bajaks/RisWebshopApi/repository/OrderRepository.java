@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
@@ -24,4 +25,15 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             "(SELECT SUM (oi.quantity*oi.unitPrice) FROM OrderItem oi WHERE oi.order = o) <= :maxTotal) ")
     public Page<Order> search(@Param("from")Date from, @Param("to") Date to, @Param("address") String address,
                               @Param("minTotal") Float minTotal, @Param("maxTotal") Float maxTotal, @Param("user")User user, Pageable pageable);
+
+    @Transactional(readOnly = true)
+    @Query("SELECT o FROM Order o WHERE o.address ilike %:address% " +
+            "AND (:from IS NULL OR o.timestamp >= :from) " +
+            "AND (:to IS NULL OR o.timestamp <= :to) " +
+            "AND (:minTotal IS NULL OR " +
+            "(SELECT SUM (oi.quantity*oi.unitPrice) FROM OrderItem oi WHERE oi.order = o) >= :minTotal) " +
+            "AND (:maxTotal IS NULL OR " +
+            "(SELECT SUM (oi.quantity*oi.unitPrice) FROM OrderItem oi WHERE oi.order = o) <= :maxTotal) ")
+    public List<Order> forReport(@Param("from")Date from, @Param("to") Date to, @Param("address") String address,
+                                         @Param("minTotal") Float minTotal, @Param("maxTotal") Float maxTotal);
 }

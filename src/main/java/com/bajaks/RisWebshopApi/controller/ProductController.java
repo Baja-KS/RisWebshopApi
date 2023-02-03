@@ -103,7 +103,7 @@ public class ProductController {
         return reviewService.forProduct(product,page,perPage);
 
     }
-    @GetMapping("/report/{id}")
+    @GetMapping("/reviews/report/{id}")
     public void report(HttpServletResponse r,@PathVariable(name = "id")Product product) throws Exception {
         JasperPrint jasperPrint = reviewService.reviewReport(product);
         r.setContentType("application/x-download");
