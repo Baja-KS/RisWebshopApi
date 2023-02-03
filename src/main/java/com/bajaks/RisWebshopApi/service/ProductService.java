@@ -44,6 +44,11 @@ public class ProductService {
         return pr.findById(Long.valueOf(id)).orElseThrow(() -> new ProductNotFoundException(id.toString()));
     }
 
+    public Product removeFromStock(Product product,Integer quantity){
+        product.setStock(product.getStock()-quantity);
+        return pr.save(product);
+    }
+
     public List<Product> all(){
         return pr.findAll();
     }

@@ -1,6 +1,7 @@
 package com.bajaks.RisWebshopApi.controller;
 
 import com.bajaks.RisWebshopApi.dto.*;
+import com.bajaks.RisWebshopApi.exception.ErrorResponse;
 import com.bajaks.RisWebshopApi.model.Category;
 import com.bajaks.RisWebshopApi.model.Product;
 import com.bajaks.RisWebshopApi.model.Review;
@@ -8,25 +9,42 @@ import com.bajaks.RisWebshopApi.model.User;
 import com.bajaks.RisWebshopApi.service.ProductService;
 import com.bajaks.RisWebshopApi.service.ReviewService;
 import com.bajaks.RisWebshopApi.service.UserService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
 @CrossOrigin("*")
+@Slf4j
 public class ProductController {
+    @ExceptionHandler(value = RuntimeException.class)
+    public ResponseEntity<Object> exception(RuntimeException exception) {
+        log.atError().log(exception.getMessage());
+        return new ResponseEntity<>(new ErrorResponse(exception.getMessage(),new Date()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(value = ExpiredJwtException.class)
+    public ResponseEntity<Object> jwtExpiredException(ExpiredJwtException exception) {
+        log.atError().log(exception.getMessage());
+        return new ResponseEntity<>(new ErrorResponse(exception.getMessage(),new Date()), HttpStatus.UNAUTHORIZED);
+    }
+
     private final ProductService productService;
     private final ReviewService reviewService;
 

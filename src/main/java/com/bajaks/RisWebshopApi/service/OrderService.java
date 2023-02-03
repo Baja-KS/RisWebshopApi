@@ -32,6 +32,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final MinioService minioService;
+    private final ProductService productService;
 
     public Page<Order> search(OrderSearchData data) {
         Sort sort = Sort.by(Sort.Direction.DESC,"timestamp");
@@ -41,17 +42,25 @@ public class OrderService {
 
     public Order create(OrderCreateRequest request,User user) {
         for (OrderItemRequest orderItemRequest : request.getItems()) {
-            if (orderItemRequest.getQuantity() > orderItemRequest.getProduct().getStock()) {
+            Product p = productService.getById(orderItemRequest.getProductId());
+            if (orderItemRequest.getQuantity() > p.getStock()) {
                 throw new RuntimeException("Product is out of stock");
             }
         }
         Order o = Order.builder().address(request.getAddress()).user(user).build();
-        List<OrderItem> items = request.getItems().stream().map(orderItemRequest -> OrderItem.builder()
-                .order(o)
-                .unitPrice(orderItemRequest.getProduct().getPrice())
-                .quantity(orderItemRequest.getQuantity())
-                .product(orderItemRequest.getProduct()).build()).toList();
+        List<OrderItem> items = request.getItems().stream().map(orderItemRequest -> {
+            Product p = productService.getById(orderItemRequest.getProductId());
+            productService.removeFromStock(p,orderItemRequest.getQuantity());
+            return OrderItem.builder()
+                    .order(o)
+                    .unitPrice(p.getPrice())
+                    .quantity(orderItemRequest.getQuantity())
+                    .product(p).build();
+        }).toList();
         o.setOrderItems(items);
+        log.atInfo().log("Items ordered: {}",o.getOrderItems());
+        orderRepository.save(o);
+
         return o;
     }
 
@@ -71,7 +80,7 @@ public class OrderService {
                 .orderTime(order.getTimestamp())
                 .total(order.total())
                 .deliveryTime(order.getDeliveryTime())
-                .isDelivered(order.getDelivered() ? "Yes" : "No")
+                .isDelivered((order.getDelivered() != null && order.getDelivered()) ? "Yes" : "No")
                 .address(order.getAddress()).build()).toList();
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(orders);
         try {

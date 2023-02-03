@@ -26,7 +26,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order",cascade = CascadeType.PERSIST)
     @JsonManagedReference
     private List<OrderItem> orderItems;
 
